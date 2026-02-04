@@ -49,7 +49,7 @@ const SingleTick = ({ className = "" }: { className?: string }) => (
 const DoubleTick = ({ className = "" }: { className?: string }) => (
   <svg
     className={className}
-    viewBox="0 0 28 12"
+    viewBox="0 0 24 12"
     fill="none"
     stroke="currentColor"
     strokeWidth="2.2"
@@ -57,8 +57,8 @@ const DoubleTick = ({ className = "" }: { className?: string }) => (
     strokeLinejoin="round"
     aria-hidden
   >
-    <path d="M1.5 6.5l3.5 3.5L13 2" />
-    <path d="M10.5 6.5l3.5 3.5L22 2" />
+    <path d="M2 6.5l3.5 3.5L13.5 2" />
+    <path d="M6 6.5l3.5 3.5L17.5 2" />
   </svg>
 );
 
