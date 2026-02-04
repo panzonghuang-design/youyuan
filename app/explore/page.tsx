@@ -99,9 +99,9 @@ export default function ExplorePage() {
       img.onload = done;
       img.onerror = done;
       img.src = src;
-      if ("decode" in img) {
-        // @ts-expect-error decode exists in modern browsers
-        img.decode().then(done).catch(done);
+      const decoder = (img as HTMLImageElement & { decode?: () => Promise<void> }).decode;
+      if (typeof decoder === "function") {
+        decoder.call(img).then(done).catch(done);
       }
     });
   };
