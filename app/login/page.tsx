@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormCard, Field } from "../components/ui";
-import { photoPool } from "../lib/data";
+import { dialingCodes, photoPool } from "../lib/data";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [phoneCode, setPhoneCode] = useState("+86");
+  const [phoneCode, setPhoneCode] = useState("+852");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,6 +46,12 @@ export default function LoginPage() {
       // ignore
     }
   };
+
+  const dialOptions = [
+    "+852",
+    "+886",
+    ...dialingCodes.filter((c) => c !== "+86" && c !== "+852" && c !== "+886"),
+  ];
 
   return (
     <main className="mx-auto max-w-xl px-3 pb-8 pt-8 space-y-6 sm:px-4 sm:pb-10 sm:pt-12">
@@ -100,8 +106,10 @@ export default function LoginPage() {
                   onChange={(e) => setPhoneCode(e.target.value)}
                   className="w-full h-[44px] appearance-none rounded-2xl border border-[#f3d4e8] bg-white px-3 pr-8 text-base font-semibold text-[#2f2a2a] focus:border-accent focus:outline-none"
                 >
-                  {["+86", "+852", "+853", "+886", "+81", "+82", "+60", "+65", "+1", "+44", "+33", "+49", "+61", "+64", "+91", "+971"].map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                  {dialOptions.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
                   ))}
                 </select>
                 <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[#ff6ba6] text-lg">⌄</span>
