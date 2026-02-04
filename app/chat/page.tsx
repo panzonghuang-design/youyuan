@@ -803,9 +803,25 @@ export default function ChatPage() {
       }
     });
 
-    socket.on("messages:read", (payload: { chat_id: number; reader_id: number }) => {
-      const { chat_id } = payload || {};
-      if (!chat_id) return;
+    socket.on("messages:read", (payload: { chat_id: number; reader_id: number; read_at?: string | null }) => {
+      const { chat_id, reader_id, read_at } = payload || {};
+      if (!chat_id || !reader_id) return;
+      if (chat_id !== currentChatIdRef.current) return;
+      if (reader_id === userIdRef.current) return;
+      const readAt = read_at || new Date().toISOString();
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.sender_id === userIdRef.current && !m.read_at ? { ...m, read_at: readAt } : m
+        )
+      );
+      setChatCache((prev) => {
+        const list = prev[chat_id] || [];
+        if (!list.length) return prev;
+        const next = list.map((m) =>
+          m.sender_id === userIdRef.current && !m.read_at ? { ...m, read_at: readAt } : m
+        );
+        return { ...prev, [chat_id]: next };
+      });
     });
 
     socket.on(
@@ -1538,15 +1554,25 @@ export default function ChatPage() {
                               scheduleScrollToBottom();
                             }}
                           />
-                          <span className="text-[11px] text-slate-500 text-right">
+                          <span className="text-[11px] text-slate-500 text-right inline-flex items-center gap-1">
                             {formatChatTime(m.created_at) || formatTimeNow()}
+                            {isSelf && !m.pending && (
+                              <span className={`text-[11px] ${m.read_at ? "text-sky-500" : "text-slate-400"}`}>
+                                {m.read_at ? "✓✓" : "✓"}
+                              </span>
+                            )}
                           </span>
                         </div>
                       ) : (
                         <div className="flex flex-wrap items-end gap-2">
                           <span className="whitespace-pre-wrap break-words">{m.content}</span>
-                          <span className="text-[11px] text-slate-500">
+                          <span className="text-[11px] text-slate-500 inline-flex items-center gap-1">
                             {formatChatTime(m.created_at) || formatTimeNow()}
+                            {isSelf && !m.pending && (
+                              <span className={`text-[11px] ${m.read_at ? "text-sky-500" : "text-slate-400"}`}>
+                                {m.read_at ? "✓✓" : "✓"}
+                              </span>
+                            )}
                           </span>
                         </div>
                       )}
