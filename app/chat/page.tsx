@@ -40,6 +40,7 @@ export default function ChatPage() {
   const [selfAvatar, setSelfAvatar] = useState<string | null>(null);
   const socketRef = useRef<ReturnType<typeof createSocket> | null>(null);
   const currentChatIdRef = useRef<number | null>(null);
+  const currentPartnerIdRef = useRef<number | null>(null);
   const userIdRef = useRef<number | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -51,6 +52,7 @@ export default function ChatPage() {
   const [socketStatus, setSocketStatus] = useState<"connected" | "connecting" | "reconnecting" | "disconnected">(
     "connecting"
   );
+  const [partnerOnline, setPartnerOnline] = useState<boolean | null>(null);
   const [chatCache, setChatCache] = useState<Record<number, MessageItem[]>>({});
   const [chatCursorCache, setChatCursorCache] = useState<Record<number, { nextBeforeId: number | null; hasMore: boolean }>>(
     {}
@@ -67,6 +69,7 @@ export default function ChatPage() {
   const prefetchingRef = useRef<Set<number>>(new Set());
   const cacheWriteTimer = useRef<NodeJS.Timeout | null>(null);
   const listCacheTimer = useRef<NodeJS.Timeout | null>(null);
+  const watchedPresenceRef = useRef<number | null>(null);
   const MAX_CACHE = 60;
   const lastTailIdRef = useRef<string | null>(null);
   const activatedChatsRef = useRef<Set<number>>(new Set());
@@ -122,7 +125,8 @@ export default function ChatPage() {
 
   useEffect(() => {
     currentChatIdRef.current = currentChatId;
-  }, [currentChatId]);
+    currentPartnerIdRef.current = currentChat?.partner_id ?? null;
+  }, [currentChatId, currentChat]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -819,6 +823,14 @@ export default function ChatPage() {
       }
     );
 
+    socket.on("presence:update", (payload: { user_id: number; online: boolean }) => {
+      const { user_id, online } = payload || {};
+      if (!user_id) return;
+      if (currentPartnerIdRef.current === user_id) {
+        setPartnerOnline(Boolean(online));
+      }
+    });
+
     socket.on("message:failed", (payload: { chat_id: number; client_id: string }) => {
       const { chat_id, client_id } = payload || {};
       if (!chat_id || !client_id) return;
@@ -868,6 +880,28 @@ export default function ChatPage() {
       if (listCacheTimer.current) clearTimeout(listCacheTimer.current);
     };
   }, [chats, userId, chatListCursor, chatListHasMore]);
+
+  useEffect(() => {
+    const socket = socketRef.current;
+    const partnerId = currentChat?.partner_id ?? null;
+    if (!socket) return;
+    if (watchedPresenceRef.current && watchedPresenceRef.current !== partnerId) {
+      socket.emit("presence:unwatch", { user_id: watchedPresenceRef.current });
+      watchedPresenceRef.current = null;
+    }
+    if (partnerId) {
+      watchedPresenceRef.current = partnerId;
+      setPartnerOnline(null);
+      socket.emit("presence:watch", { user_id: partnerId });
+    } else {
+      setPartnerOnline(null);
+    }
+    return () => {
+      if (partnerId) {
+        socket.emit("presence:unwatch", { user_id: partnerId });
+      }
+    };
+  }, [currentChat?.partner_id, socketStatus]);
 
   useEffect(() => {
     const uid = userId;
@@ -1376,9 +1410,18 @@ export default function ChatPage() {
                 <div className="text-center">
                   <h3 className="text-lg font-semibold text-slate-900 sm:text-xl">{currentChat.partner_name}</h3>
                   <p className="mt-1 flex items-center justify-center gap-2 text-xs text-slate-500">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-emerald-600">
-                      <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden />
-                      在线
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 ${
+                        partnerOnline === false
+                          ? "bg-slate-100 text-slate-500"
+                          : "bg-emerald-50 text-emerald-600"
+                      }`}
+                    >
+                      <span
+                        className={`h-2 w-2 rounded-full ${partnerOnline === false ? "bg-slate-400" : "bg-emerald-500"}`}
+                        aria-hidden
+                      />
+                      {partnerOnline === false ? "离线" : "在线"}
                     </span>
                     {currentChat.guest_expired && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-amber-700">
