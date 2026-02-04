@@ -608,7 +608,7 @@ export default function ChatPage() {
             initId = targetChatId;
           } else {
             const lastActiveRaw = localStorage.getItem(`chat_last_active_guest_${guestToken}`);
-            const lastActiveId = lastActiveRaw ? parseInt(lastActiveRaw, 10) : null;
+            const lastActiveId = lastActiveRaw ? parseInt(lastActiveRaw, 10) : Number.NaN;
             if (Number.isFinite(lastActiveId) && ids.has(lastActiveId)) {
               initId = lastActiveId;
             } else {
