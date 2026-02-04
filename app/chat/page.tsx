@@ -1556,8 +1556,12 @@ export default function ChatPage() {
                           />
                           <span className="text-[11px] text-slate-500 text-right inline-flex items-center gap-1">
                             {formatChatTime(m.created_at) || formatTimeNow()}
-                            {isSelf && !m.pending && (
-                              <span className={`text-[11px] ${m.read_at ? "text-sky-500" : "text-slate-400"}`}>
+                            {isSelf && (
+                              <span
+                                className={`text-[11px] ${
+                                  m.read_at ? "text-sky-500" : "text-slate-400"
+                                }`}
+                              >
                                 {m.read_at ? "✓✓" : "✓"}
                               </span>
                             )}
@@ -1568,8 +1572,12 @@ export default function ChatPage() {
                           <span className="whitespace-pre-wrap break-words">{m.content}</span>
                           <span className="text-[11px] text-slate-500 inline-flex items-center gap-1">
                             {formatChatTime(m.created_at) || formatTimeNow()}
-                            {isSelf && !m.pending && (
-                              <span className={`text-[11px] ${m.read_at ? "text-sky-500" : "text-slate-400"}`}>
+                            {isSelf && (
+                              <span
+                                className={`text-[11px] ${
+                                  m.read_at ? "text-sky-500" : "text-slate-400"
+                                }`}
+                              >
                                 {m.read_at ? "✓✓" : "✓"}
                               </span>
                             )}
