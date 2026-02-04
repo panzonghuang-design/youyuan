@@ -31,6 +31,37 @@ type MessageItem = {
   pending?: boolean;
 };
 
+const SingleTick = ({ className = "" }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 12"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <path d="M2 6.5l3.5 3.5L13.5 2" />
+  </svg>
+);
+
+const DoubleTick = ({ className = "" }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 28 12"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <path d="M1.5 6.5l3.5 3.5L13 2" />
+    <path d="M10.5 6.5l3.5 3.5L22 2" />
+  </svg>
+);
+
 export default function ChatPage() {
   const [chats, setChats] = useState<ChatItem[]>([]);
   const [currentChatId, setCurrentChatId] = useState<number | null>(null);
@@ -1557,12 +1588,12 @@ export default function ChatPage() {
                           <span className="text-[11px] text-slate-500 text-right inline-flex items-center gap-1">
                             {formatChatTime(m.created_at) || formatTimeNow()}
                             {isSelf && (
-                              <span
-                                className={`text-[11px] ${
-                                  m.read_at ? "text-sky-500" : "text-slate-400"
-                                }`}
-                              >
-                                {m.read_at ? "✓✓" : "✓"}
+                              <span className="ml-0.5 inline-flex items-center">
+                                {m.read_at ? (
+                                  <DoubleTick className="h-3 w-4 text-sky-500" />
+                                ) : (
+                                  <SingleTick className="h-3 w-3 text-slate-400" />
+                                )}
                               </span>
                             )}
                           </span>
@@ -1573,12 +1604,12 @@ export default function ChatPage() {
                           <span className="text-[11px] text-slate-500 inline-flex items-center gap-1">
                             {formatChatTime(m.created_at) || formatTimeNow()}
                             {isSelf && (
-                              <span
-                                className={`text-[11px] ${
-                                  m.read_at ? "text-sky-500" : "text-slate-400"
-                                }`}
-                              >
-                                {m.read_at ? "✓✓" : "✓"}
+                              <span className="ml-0.5 inline-flex items-center">
+                                {m.read_at ? (
+                                  <DoubleTick className="h-3 w-4 text-sky-500" />
+                                ) : (
+                                  <SingleTick className="h-3 w-3 text-slate-400" />
+                                )}
                               </span>
                             )}
                           </span>
