@@ -91,6 +91,21 @@ export default function ExplorePage() {
     };
   };
 
+  const preloadImage = (src?: string | null) => {
+    if (!src) return Promise.resolve(false);
+    return new Promise<boolean>((resolve) => {
+      const img = new Image();
+      const done = () => resolve(true);
+      img.onload = done;
+      img.onerror = done;
+      img.src = src;
+      if ("decode" in img) {
+        // @ts-expect-error decode exists in modern browsers
+        img.decode().then(done).catch(done);
+      }
+    });
+  };
+
   return (
     <main className="mx-auto max-w-4xl px-3 pb-6 pt-3 space-y-3 sm:px-4 sm:pt-4">
       <div className="mx-auto w-full max-w-xs rounded-3xl bg-gradient-to-r from-white/90 via-white/95 to-white/85 px-5 py-4 shadow-glow text-center sm:max-w-[260px] sm:px-6">
@@ -199,8 +214,11 @@ export default function ExplorePage() {
                 const [user] = await Promise.all([requestMatch(), delay]);
                 const album = Array.isArray(user.photos) ? user.photos.filter(Boolean) : [];
                 const avatar = user.avatar_url || album[0] || photoPool[0];
-                setMatchGallery(album.length ? album : [avatar]);
+                const gallery = album.length ? album : [avatar];
+                setMatchGallery(gallery);
                 setMatchGalleryIdx(0);
+                const primary = gallery[0] || avatar;
+                await preloadImage(primary);
                 setMatchResult({
                   id: user.id,
                   name: user.name || "未命名",
@@ -208,6 +226,12 @@ export default function ExplorePage() {
                   zodiac: user.zodiac || "--",
                   hobby: user.hobby || "暂无爱好描述",
                 });
+                gallery.slice(1).forEach((src) => {
+                  void preloadImage(src);
+                });
+                if (avatar && avatar !== primary) {
+                  void preloadImage(avatar);
+                }
               } catch (e: any) {
                 await delay;
                 if (String(e?.message || "").includes("游客仅允许匹配一次")) {
