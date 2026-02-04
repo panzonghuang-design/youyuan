@@ -336,11 +336,11 @@ export default function ChatPage() {
     if (typeof window === "undefined") return null;
     return localStorage.getItem("guest_token");
   };
-  const getAuthHeaders = () => {
+  const getAuthHeaders = (): Record<string, string> | null => {
     const token = getToken();
-    if (token) return { Authorization: `Bearer ${token}` };
+    if (token) return { Authorization: `Bearer ${token}` } as Record<string, string>;
     const guestToken = getGuestToken();
-    if (guestToken) return { "x-guest-token": guestToken };
+    if (guestToken) return { "x-guest-token": guestToken } as Record<string, string>;
     return null;
   };
   const safeHeaders = (headers?: Record<string, string> | null) => {
