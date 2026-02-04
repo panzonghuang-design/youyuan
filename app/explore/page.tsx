@@ -423,7 +423,7 @@ function generateBubbles(pool: string[], profs: typeof profiles, fallback: strin
   });
 
   const avatarCount = Math.min(pool.length, spots.length);
-  const sortedIdx = [...spots.keys()].sort((a, b) => spots[b].size - spots[a].size);
+  const sortedIdx = Array.from(spots.keys()).sort((a, b) => spots[b].size - spots[a].size);
   sortedIdx.slice(0, avatarCount).forEach((idx, i) => {
     spots[idx].avatarIndex = i;
   });
