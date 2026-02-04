@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormCard, Field, Select } from "../components/ui";
 import { dialingCodes } from "../lib/data";
 import AvatarUploader from "../components/AvatarUploader";
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -404,5 +404,13 @@ export default function RegisterPage() {
       </div>
     )}
     </>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterPageContent />
+    </Suspense>
   );
 }
