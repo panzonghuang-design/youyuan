@@ -88,6 +88,7 @@ export default function ChatPage() {
   const [chatCursorCache, setChatCursorCache] = useState<Record<number, { nextBeforeId: number | null; hasMore: boolean }>>(
     {}
   );
+  const [guestImagePromptOpen, setGuestImagePromptOpen] = useState(false);
   const [chatListCursor, setChatListCursor] = useState<string | null>(null);
   const [chatListHasMore, setChatListHasMore] = useState(true);
   const [chatListLoadingMore, setChatListLoadingMore] = useState(false);
@@ -377,6 +378,11 @@ export default function ChatPage() {
     const guestToken = getGuestToken();
     if (guestToken) return { "x-guest-token": guestToken } as Record<string, string>;
     return null;
+  };
+  const isGuestUser = () => {
+    const token = getToken();
+    const guestToken = getGuestToken();
+    return !token && !!guestToken;
   };
   const safeHeaders = (headers?: Record<string, string> | null) => {
     return headers && typeof headers === "object" ? headers : undefined;
@@ -1095,6 +1101,15 @@ export default function ChatPage() {
 
   const handlePaste = async (e: ReactClipboardEvent<HTMLTextAreaElement>) => {
     if (currentChat?.guest_expired) return;
+    if (isGuestUser()) {
+      const items = e.clipboardData?.items || [];
+      const hasImage = Array.from(items).some((it) => it.kind === "file" && it.type.startsWith("image/"));
+      if (hasImage) {
+        e.preventDefault();
+        setGuestImagePromptOpen(true);
+      }
+      return;
+    }
     const headers = getAuthHeaders();
     if (!headers || !currentChatIdRef.current) return;
     const items = e.clipboardData?.items || [];
@@ -1161,6 +1176,10 @@ export default function ChatPage() {
 
   const sendImageFile = async (file: File) => {
     if (currentChat?.guest_expired) return;
+    if (isGuestUser()) {
+      setGuestImagePromptOpen(true);
+      return;
+    }
     const headers = getAuthHeaders();
     if (!headers || !currentChatIdRef.current) return;
     if (!file.type.startsWith("image/")) {
@@ -1660,7 +1679,14 @@ export default function ChatPage() {
             <button
               aria-label="发送图片"
               className="grid h-10 w-10 place-items-center rounded-2xl border border-slate-200 bg-white text-base text-slate-600 shadow-sm transition hover:bg-slate-50 sm:h-12 sm:w-12"
-              onClick={() => imageInputRef.current?.click()}
+              onClick={() => {
+                if (currentChat?.guest_expired) return;
+                if (isGuestUser()) {
+                  setGuestImagePromptOpen(true);
+                  return;
+                }
+                imageInputRef.current?.click();
+              }}
               disabled={currentChat?.guest_expired}
             >
               <CameraIcon />
@@ -1721,6 +1747,31 @@ export default function ChatPage() {
               }}
             >
               前往注册
+            </button>
+          </div>
+        </div>
+      )}
+      {guestImagePromptOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="relative w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-2xl">
+            <button
+              className="absolute right-4 top-4 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+              onClick={() => setGuestImagePromptOpen(false)}
+            >
+              关闭
+            </button>
+            <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-full bg-amber-50 text-amber-600 text-2xl font-extrabold">
+              !
+            </div>
+            <h3 className="text-lg font-extrabold text-slate-900">登录账户即可发送图片</h3>
+            <button
+              className="mt-4 w-full rounded-full bg-gradient-to-r from-amber-400 to-rose-400 py-2.5 text-sm font-semibold text-white shadow-lg hover:brightness-110"
+              onClick={() => {
+                const next = currentChatId ? `/chat?chat_id=${currentChatId}` : "/chat";
+                window.location.href = `/register?next=${encodeURIComponent(next)}`;
+              }}
+            >
+              立即注册
             </button>
           </div>
         </div>
