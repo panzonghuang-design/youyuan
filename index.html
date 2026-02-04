@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>缘遇 · 心动社交</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-layer">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">缘遇</div>
+    <nav class="nav">
+      <button data-target="welcome" class="nav-btn active">欢迎</button>
+      <button data-target="login" class="nav-btn">登录</button>
+      <button data-target="register" class="nav-btn">注册</button>
+      <button data-target="explore" class="nav-btn">邂逅</button>
+      <button data-target="chat" class="nav-btn">聊天室</button>
+      <button data-target="profile" class="nav-btn">我的</button>
+    </nav>
+  </header>
+
+  <main id="view">
+    <section id="welcome" class="panel visible">
+      <div class="hero">
+        <div class="hero-text">
+          <p class="eyebrow">贴近真实 · 高效匹配</p>
+          <h1>遇见对的 TA</h1>
+          <p class="subtitle">缘遇为认真寻找伴侣的你而生，安全的身份验证、细致的兴趣标签、即时交流，让心动更快发生。</p>
+          <div class="hero-actions">
+            <button class="cta" data-target="register">立即加入</button>
+            <button class="ghost" data-target="explore">先看看</button>
+          </div>
+        </div>
+        <div class="hero-card">
+          <div class="stat">
+            <span class="stat-num" id="statMatches">2,438</span>
+            <span class="stat-label">本周成功匹配</span>
+          </div>
+          <div class="stat">
+            <span class="stat-num" id="statOnline">318</span>
+            <span class="stat-label">当前在线</span>
+          </div>
+          <div class="mini-grid" id="miniGrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="login" class="panel">
+      <div class="card form-card">
+        <h2>登录</h2>
+        <label>邮箱
+          <input type="email" placeholder="you@example.com">
+        </label>
+        <label>密码
+          <input type="password" placeholder="••••••••">
+        </label>
+        <button class="cta full">进入缘遇</button>
+        <p class="muted">还没有账号？ <a href="#" data-target="register">去注册</a></p>
+      </div>
+    </section>
+
+    <section id="register" class="panel">
+      <div class="card form-card">
+        <h2>注册</h2>
+        <div class="grid two">
+          <label>昵称
+            <input type="text" placeholder="取一个让人记住的名字">
+          </label>
+          <label>年龄
+            <input type="number" min="18" max="80" placeholder="25">
+          </label>
+        </div>
+        <div class="grid two">
+          <label>性别
+            <select>
+              <option>男</option>
+              <option>女</option>
+              <option>其他</option>
+            </select>
+          </label>
+          <label>想认识
+            <select>
+              <option>女性</option>
+              <option>男性</option>
+              <option>不限</option>
+            </select>
+          </label>
+        </div>
+        <label>自我介绍
+          <textarea rows="3" placeholder="分享兴趣、生活、期待..."></textarea>
+        </label>
+        <button class="cta full">创建账号</button>
+        <p class="muted">已有账号？ <a href="#" data-target="login">直接登录</a></p>
+      </div>
+    </section>
+
+    <section id="explore" class="panel">
+      <div class="panel-head">
+        <div>
+          <h2>邂逅精选</h2>
+          <p class="muted">向右喜欢，向左再看看</p>
+        </div>
+        <div class="filters">
+          <label class="chip">
+            <span>距离</span>
+            <input type="range" min="1" max="50" value="12">
+            <small id="distanceLabel">12 km</small>
+          </label>
+          <label class="chip">
+            <span>年龄</span>
+            <input type="range" min="18" max="45" value="28">
+            <small id="ageLabel">28</small>
+          </label>
+        </div>
+      </div>
+
+      <div class="profile-grid" id="profileGrid"></div>
+    </section>
+
+    <section id="chat" class="panel">
+      <div class="chat-wrap">
+        <aside class="card chat-list" id="chatList"></aside>
+        <div class="card chat-room">
+          <header class="chat-header">
+            <div>
+              <p class="muted tiny">正在聊天</p>
+              <h3 id="chatTitle">选择一个对话</h3>
+            </div>
+            <span class="status">在线</span>
+          </header>
+          <div class="messages" id="messages"></div>
+          <div class="chat-input">
+            <input id="messageInput" placeholder="说点什么..." autocomplete="off">
+            <button id="sendBtn">发送</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="profile" class="panel">
+      <div class="card profile-card">
+        <div class="avatar-lg">Y</div>
+        <div>
+          <h2>Yuan · 28</h2>
+          <p class="muted">上海 · 品尝咖啡 · 公路骑行 · 电影</p>
+          <div class="tags">
+            <span>#认真交友</span>
+            <span>#周末出游</span>
+            <span>#摄影</span>
+          </div>
+        </div>
+        <button class="ghost">编辑资料</button>
+      </div>
+
+      <div class="card profile-details">
+        <h3>我的故事</h3>
+        <p>热爱分享生活的小事，喜欢骑行、胶片相机和手冲咖啡。期待找到同频的人，一起走走看看。</p>
+        <h3>安全设置</h3>
+        <ul>
+          <li>实名校验：已完成</li>
+          <li>双重验证：已开启</li>
+          <li>消息提醒：开启</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
